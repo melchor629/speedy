@@ -45,7 +45,8 @@ Being in the root of the repository, these commands will build the three tags av
 ```bash
 docker image build -t melchor9000/speedy:latest -f docker/latest/Dockerfile .
 docker image build -t melchor9000/speedy:slim -f docker/slim/Dockerfile .
-docker image build -t melchor9000/speedy:alpine-f docker/alpine/Dockerfile .
+docker image build -t melchor9000/speedy:alpine -f docker/alpine/Dockerfile .
+docker image build -t melchor9000/speedy:test -f docker/Dockerfile . #Test version, grabs the code from your PC :)
 ```
 
 ## Example with influxdb, chronograf and docker-compose
