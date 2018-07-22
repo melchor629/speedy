@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  speedy:
+    image: melchor9000/speedy:alpine
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    network_mode: host
+    command: speedy -device ${DEVICE} -db postgres -db-url postgres://postgres:r4nd0m@localhost
+    depends_on:
+      - db
+
+  db:
+    image: timescale/timescaldb:latest-pg10
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - db_vol:/var/lib/postgresql/data
+      - ./iql:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_PASSWORD: r4nd0m
+
+volumes:
+  db_vol:

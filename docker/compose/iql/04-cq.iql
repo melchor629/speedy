@@ -1,0 +1,1 @@
+CREATE CONTINUOUS QUERY "cq_24h" ON "speedy" BEGIN   SELECT sum("download") as "total_download", sum("upload") as "total_upload"   INTO "monthly_gc"."downsampled"   FROM "measures"   GROUP BY time(24h),mac END

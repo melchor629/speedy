@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  speedy:
+    image: melchor9000/speedy:alpine
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    network_mode: host
+    command: speedy -device ${DEVICE} -db-url http://localhost:8086
+    depends_on:
+      - db
+
+  db:
+    image: influxdb
+    ports:
+      - "127.0.0.1:8086:8086"
+    volumes:
+      - db_vol:/var/lib/influxdb
+      - ./iql:/docker-entrypoint-initdb.d
+    environment:
+      INFLUXDB_DB: speedy
+
+  chronograf:
+    image: quay.io/influxdb/chronograf
+    ports:
+      - "8888:8888"
+    volumes:
+      - ch_vol:/var/lib/chronograf
+
+volumes:
+  db_vol:
+  ch_vol:
