@@ -1,10 +1,10 @@
 package influxdb
 
 import (
-	"github.com/influxdata/influxdb/client/v2"
-	"speedy/database"
-	"time"
 	"log"
+	"time"
+	".."
+	"github.com/influxdata/influxdb/client/v2"
 )
 
 //Implementation of a database using influxdb.

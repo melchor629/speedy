@@ -1,11 +1,11 @@
 package storage
 
 import (
-	"speedy/capture"
-	"speedy/database"
-	"time"
 	"log"
 	"os"
+	"time"
+	"../capture"
+	"../database"
 )
 
 // The key is the MAC Address as String (to be easily hasheable in go I suppose)

@@ -1,13 +1,13 @@
 package timescaledb
 
 import (
+	"fmt"
+	"log"
+	"strings"
 	"database/sql"
+	".."
 
 	_ "github.com/lib/pq"
-	"speedy/database"
-	"log"
-	"fmt"
-	"strings"
 )
 
 //Implementation of a database using timescaledb (postgresql).

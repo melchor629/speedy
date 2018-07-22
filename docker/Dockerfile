@@ -1,10 +1,12 @@
+#Not for production, only for testing purposes
 FROM golang:alpine as builder
+
+WORKDIR /go/src/speedy
+COPY . .
 
 RUN apk add --no-cache libpcap-dev git build-base && \
     go get -d -v github.com/influxdata/influxdb/client/v2 && \
     go get -d -v github.com/google/gopacket && \
-    go get -d -v github.com/melchor629/speedy && \
-    cd src/github.com/melchor629/speedy && \
     go install -v ./...
 
 FROM alpine:latest

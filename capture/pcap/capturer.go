@@ -2,13 +2,13 @@
 package pcap
 
 import (
-	"github.com/google/gopacket/pcap"
-	"speedy/capture"
-	"net"
 	"log"
+	"net"
+	"os"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
-	"os"
+	"github.com/google/gopacket/pcap"
+	".."
 )
 
 //Capture the trafic using libpcap

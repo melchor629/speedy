@@ -61,7 +61,7 @@ The example sets a database that everyday will downsample the data into `"monthl
 
 ### influxdb
 
-The implementation stores a measure in `measures` with the data. Is it up to you to make retention policies and continues queries, as the way you want. In docker/compose/iql there's an example of a database.
+The implementation stores a measure in `measures` with the data. Is it up to you to make retention policies and continues queries, as the way you want. Inside `docker/compose/iql` there's an example of a database.
 
 ### timescaledb / postgresql
 

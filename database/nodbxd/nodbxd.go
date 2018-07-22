@@ -2,8 +2,8 @@ package nodbxd
 
 import (
 	"fmt"
-	"speedy/database"
 	"time"
+	".."
 )
 
 type NoDBxD struct {}

@@ -2,16 +2,16 @@
 package main
 
 import (
-	"speedy/capture/pcap"
 	"log"
-	"speedy/storage"
-	"speedy/database/influxdb"
 	"os"
 	"os/signal"
 	"flag"
 	"fmt"
-	"speedy/database"
-	"speedy/database/timescaledb"
+	"./capture/pcap"
+	"./storage"
+	"./database"
+	"./database/influxdb"
+	"./database/timescaledb"
 )
 
 type dbImplFactoryFunction func (host string, dbName string, user string, pass string) (database.Database, error)
