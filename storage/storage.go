@@ -3,17 +3,22 @@ package storage
 import (
 	"log"
 	"os"
+	"sync"
 	"time"
 	"github.com/melchor629/speedy/capture"
 	"github.com/melchor629/speedy/database"
 )
 
 // The key is the MAC Address as String (to be easily hasheable in go I suppose)
-type Storage map[string]Entry
+type Storage struct {
+	db map[string]Entry
+	mutex sync.RWMutex
+}
 
 //Starts capturing the traffic, processing them and then storing it into the database every second. The recommended way
 //is to call this function as a gorutine.
 func (s Storage) Start(capturer capture.Context, db database.Database) {
+	s.db = make(map[string]Entry)
 	stop := make(chan bool)
 	go capturer.StartCapturing()
 	go s.storeInDB(db, stop)
@@ -29,7 +34,8 @@ func (s Storage) Start(capturer capture.Context, db database.Database) {
 			continue
 		}
 
-		elem, ok := s[packet.SrcMac.String()]
+		s.mutex.Lock()
+		elem, ok := s.db[packet.SrcMac.String()]
 		if !ok {
 			elem = Entry{ mac: packet.SrcMac }
 		}
@@ -47,7 +53,8 @@ func (s Storage) Start(capturer capture.Context, db database.Database) {
 		}
 
 		elem.modified()
-		s[packet.SrcMac.String()] = elem
+		s.db[packet.SrcMac.String()] = elem
+		s.mutex.Unlock()
 	}
 
 	stop <- true
@@ -69,22 +76,26 @@ func (s *Storage) storeInDB(db database.Database, stop chan bool) {
 			db.Store(s.getCopyAndClearSpeed())
 
 			//Cleanup: when some entry has not been modified for a while, it will be deleted
-			for key, value := range *s {
+			s.mutex.Lock()
+			for key, value := range s.db {
 				if value.tooOld() {
-					delete(*s, key)
+					delete(s.db, key)
 				}
 			}
+			s.mutex.Unlock()
 		}
 	}
 }
 
 func (s Storage) getCopyAndClearSpeed() []database.Entry {
+	s.mutex.RLock()
 	newSlice := make([]database.Entry, 0)
-	for key, value := range s {
+	for key, value := range s.db {
 		copiedValue := value
 		newSlice = append(newSlice, database.Entry(&copiedValue))
 		value.ClearSpeed()
-		s[key] = value
+		s.db[key] = value
 	}
+	s.mutex.RUnlock()
 	return newSlice
 }
