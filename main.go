@@ -7,11 +7,11 @@ import (
 	"os/signal"
 	"flag"
 	"fmt"
-	"./capture/pcap"
-	"./storage"
-	"./database"
-	"./database/influxdb"
-	"./database/timescaledb"
+	"github.com/melchor629/speedy/capture/pcap"
+	"github.com/melchor629/speedy/storage"
+	"github.com/melchor629/speedy/database"
+	"github.com/melchor629/speedy/database/influxdb"
+	"github.com/melchor629/speedy/database/timescaledb"
 )
 
 type dbImplFactoryFunction func (host string, dbName string, user string, pass string) (database.Database, error)

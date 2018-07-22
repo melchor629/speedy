@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 	"time"
-	"../capture"
-	"../database"
+	"github.com/melchor629/speedy/capture"
+	"github.com/melchor629/speedy/database"
 )
 
 // The key is the MAC Address as String (to be easily hasheable in go I suppose)

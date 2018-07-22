@@ -1,6 +1,6 @@
 package influxdb
 
-import ".."
+import "github.com/melchor629/speedy/database"
 
 func Factory(host string, dbName string, user string, pass string) (database.Database, error) {
 	db, err := New(host, dbName, user, pass)

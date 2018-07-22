@@ -3,7 +3,7 @@ package influxdb
 import (
 	"log"
 	"time"
-	".."
+	"github.com/melchor629/speedy/database"
 	"github.com/influxdata/influxdb/client/v2"
 )
 

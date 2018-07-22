@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 	"database/sql"
-	".."
+	"github.com/melchor629/speedy/database"
 
 	_ "github.com/lib/pq"
 )

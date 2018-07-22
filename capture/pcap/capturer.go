@@ -8,7 +8,7 @@ import (
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
-	".."
+	"github.com/melchor629/speedy/capture"
 )
 
 //Capture the trafic using libpcap

@@ -3,7 +3,7 @@ package nodbxd
 import (
 	"fmt"
 	"time"
-	".."
+	"github.com/melchor629/speedy/database"
 )
 
 type NoDBxD struct {}
