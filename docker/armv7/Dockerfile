@@ -8,7 +8,7 @@ RUN go get -d -v github.com/influxdata/influxdb/client/v2 && \
     apt-get install --no-install-recommends -y libpcap-dev && \
     echo "do" && \
     cd src/github.com/melchor629/speedy && \
-    echo "nothing && \
+    echo "nothing" && \
     go install -v ./...
 
 FROM arm32v7/debian:latest
