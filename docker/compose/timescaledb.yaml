@@ -7,17 +7,17 @@ services:
       - NET_RAW
       - NET_ADMIN
     network_mode: host
-    command: speedy -device ${DEVICE} -db postgres -db-url postgres://postgres:r4nd0m@localhost
+    command: speedy -device ${DEVICE} -db timescaledb -db-url postgres://postgres:r4nd0m@localhost/postgres?sslmode=disable
     depends_on:
       - db
 
   db:
-    image: timescale/timescaldb:latest-pg10
+    image: timescale/timescaledb:latest-pg10
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
       - db_vol:/var/lib/postgresql/data
-      - ./iql:/docker-entrypoint-initdb.d
+      - ./timescale:/docker-entrypoint-initdb.d
     environment:
       POSTGRES_PASSWORD: r4nd0m
 

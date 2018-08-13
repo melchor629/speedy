@@ -3,7 +3,6 @@ package timescaledb
 import (
 	"fmt"
 	"log"
-	"strings"
 	"database/sql"
 	"github.com/melchor629/speedy/database"
 
@@ -44,23 +43,49 @@ func (d *Database) Store(entries []database.Entry) {
 		log.Fatal(err)
 	}
 
+	if len(entries) == 0 {
+		return
+	}
+
 	//From https://stackoverflow.com/questions/21108084/golang-mysql-insert-multiple-data-at-once
-	sqlStr := "INSERT INTO ?(time, mac, download, upload, ipv4, ipv6) VALUES"
-	var valuesStr []string
-	var values []interface{}
+	sqlStr := fmt.Sprintf("INSERT INTO %s(time, mac, download, upload, ipv4, ipv6) VALUES\n" +
+		"(NOW(), $1, $2, $3, $4, $5);", d.table)
+
+	stmt, _ := txn.Prepare(sqlStr)
 
 	for _, entry := range entries {
-		valuesStr = append(valuesStr, "(NOW(), ?, ?, ?, ?, ?)")
-		values = append(values, entry.Mac(), entry.GetDownloadSpeed(), entry.GetUploadSpeed(), entry.Ipv4(), entry.Ipv6())
+		_, err = stmt.Exec(
+			toString(entry.Mac()),
+			entry.GetDownloadSpeed(),
+			entry.GetUploadSpeed(),
+			toString(entry.Ipv4()),
+			toString(entry.Ipv6()),
+		)
+
+		if err != nil {
+			stmt.Close()
+			txn.Rollback()
+			log.Fatal(err)
+		}
 	}
 
-	sqlStr = fmt.Sprintf("%s\n%s", sqlStr, strings.Join(valuesStr, ","))
-	stmt, _ := txn.Prepare(sqlStr)
-	_, err = stmt.Exec(values)
-
-	if err != nil {
-		txn.Rollback()
-		log.Fatal(err)
-	}
 	txn.Commit()
+	stmt.Close()
+}
+
+//Converts an object with .String() method into a NullString for database
+func toString(a interface{ String() string }) sql.NullString {
+	if a == nil {
+		return sql.NullString{ Valid: false }
+	}
+
+	str := a.String()
+	if str == "" || str == "<nil>" {
+		return sql.NullString{ Valid: false }
+	}
+
+	return sql.NullString{
+		String: str,
+		Valid:  true,
+	}
 }

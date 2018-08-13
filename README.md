@@ -84,6 +84,8 @@ SELECT create_hypertable('speedy', 'time');
 CREATE INDEX ON speedy (mac, time DESC);
 ```
 
+ > **Note**: If you don't use SSL for postgreSQL (as expected in most of the time), add `sslmode=disable` option in the URL to tell the go postgreSQL driver to not to use SSL.
+
 
   [1]: https://influxdata.com
   [2]: https://github.com/melchor629/speedy/blob/master/docker/compose/influxdb.yaml
