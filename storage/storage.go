@@ -17,7 +17,7 @@ type Storage struct {
 
 //Starts capturing the traffic, processing them and then storing it into the database every second. The recommended way
 //is to call this function as a gorutine.
-func (s Storage) Start(capturer capture.Context, db database.Database) {
+func (s *Storage) Start(capturer capture.Context, db database.Database) {
 	s.db = make(map[string]Entry)
 	stop := make(chan bool)
 	go capturer.StartCapturing()
@@ -74,17 +74,20 @@ func (s *Storage) storeInDB(db database.Database, stop chan bool) {
 			itsTimeToStop = true
 		case <- timer.C:
 			db.Store(s.getCopyAndClearSpeed())
-
-			//Cleanup: when some entry has not been modified for a while, it will be deleted
-			s.mutex.Lock()
-			for key, value := range s.db {
-				if value.tooOld() {
-					delete(s.db, key)
-				}
-			}
-			s.mutex.Unlock()
+			s.cleanUpOldEntries()
 		}
 	}
+}
+
+//Cleanup: when some entry has not been modified for a while, it will be deleted
+func (s Storage) cleanUpOldEntries() {
+	s.mutex.Lock()
+	for key, value := range s.db {
+		if value.tooOld() {
+			delete(s.db, key)
+		}
+	}
+	s.mutex.Unlock()
 }
 
 func (s Storage) getCopyAndClearSpeed() []database.Entry {

@@ -47,10 +47,10 @@ func (p *Packet) Reverse() {
 
 //Returns true if the packet is IPv6 multicast.
 func (p Packet) IsIPv6Multicast() bool {
-	return p.DstMac[0] == 0x33 && p.DstMac[1] == 0x33
+	return p.SrcMac[0] == 0x33 && p.SrcMac[1] == 0x33
 }
 
 //Returns true if the packet is ethernet broadcast.
 func (p Packet) IsBroadcast() bool {
-	return p.DstMac[0] == 0xFF
+	return p.SrcMac[0] == 0xFF
 }
