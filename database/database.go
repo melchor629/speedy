@@ -14,5 +14,6 @@ type Entry interface {
 //How a database should look like.
 type Database interface {
 	Store(entry []Entry)
+	StoreMetadata(entry Entry)
 	Close()
 }

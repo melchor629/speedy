@@ -129,11 +129,16 @@ func TestCleanUpOldEntriesWithEntriesAndOneOld(t *testing.T) {
 type dumbDB struct {
 	storeCalled bool
 	entries []database.Entry
+	entry   *database.Entry
 }
 
 func (db *dumbDB) Store(entry2 []database.Entry) {
 	db.storeCalled = true
 	db.entries = entry2
+}
+
+func (db *dumbDB) StoreMetadata(entry2 database.Entry) {
+	db.entry = &entry2
 }
 
 func (db *dumbDB) Close() {}

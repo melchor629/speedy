@@ -38,18 +38,18 @@ func (d *Database) Close() {
 
 //Store a list of entries in a batch. Supposes no error will occur. If so, the app will stop.
 func (d *Database) Store(entries []database.Entry) {
+	if len(entries) == 0 {
+		return
+	}
+
 	txn, err := d.client.Begin()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if len(entries) == 0 {
-		return
-	}
-
 	//From https://stackoverflow.com/questions/21108084/golang-mysql-insert-multiple-data-at-once
-	sqlStr := fmt.Sprintf("INSERT INTO %s(time, mac, download, upload, ipv4, ipv6) VALUES\n" +
-		"(NOW(), $1, $2, $3, $4, $5);", d.table)
+	sqlStr := fmt.Sprintf("INSERT INTO %s(time, mac, download, upload) VALUES\n" +
+		"(NOW(), $1, $2, $3);", d.table)
 
 	stmt, _ := txn.Prepare(sqlStr)
 
@@ -58,8 +58,6 @@ func (d *Database) Store(entries []database.Entry) {
 			toString(entry.Mac()),
 			entry.GetDownloadSpeed(),
 			entry.GetUploadSpeed(),
-			toString(entry.Ipv4()),
-			toString(entry.Ipv6()),
 		)
 
 		if err != nil {
@@ -71,6 +69,24 @@ func (d *Database) Store(entries []database.Entry) {
 
 	txn.Commit()
 	stmt.Close()
+}
+
+func (d *Database) StoreMetadata(entry database.Entry) {
+	sqlStr2 := fmt.Sprintf("INSERT INTO %s_metadata(mac, ipv4, ipv6) VALUES ($1, $2, $3)\n" +
+		"ON CONFLICT (mac) DO\n" +
+		"UPDATE SET ipv4 = $2, ipv6 = $3", d.table)
+	stmt, _ := d.client.Prepare(sqlStr2)
+	defer stmt.Close()
+
+	_, err := stmt.Exec(
+		toString(entry.Mac()),
+		toString(entry.Ipv4()),
+		toString(entry.Ipv6()),
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 //Converts an object with .String() method into a NullString for database

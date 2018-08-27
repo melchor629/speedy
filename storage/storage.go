@@ -40,9 +40,12 @@ func (s *Storage) Start(capturer capture.Context, db database.Database) {
 			elem = Entry{ mac: packet.SrcMac }
 		}
 
+		changedMetadata := false
 		if packet.IsIP4() {
+			changedMetadata = !elem.ipv4.Equal(packet.SrcIp)
 			elem.ipv4 = packet.SrcIp
 		} else if packet.IsIP6() {
+			changedMetadata = !elem.ipv6.Equal(packet.SrcIp)
 			elem.ipv6 = packet.SrcIp
 		}
 
@@ -54,6 +57,9 @@ func (s *Storage) Start(capturer capture.Context, db database.Database) {
 
 		elem.modified()
 		s.db[packet.SrcMac.String()] = elem
+		if changedMetadata {
+			go s.storeChangeOfMetadata(db, elem)
+		}
 		s.mutex.Unlock()
 	}
 
@@ -77,6 +83,10 @@ func (s *Storage) storeInDB(db database.Database, stop chan bool) {
 			s.cleanUpOldEntries()
 		}
 	}
+}
+
+func (s *Storage) storeChangeOfMetadata(db database.Database, entry Entry) {
+	db.StoreMetadata(database.Entry(&entry))
 }
 
 //Cleanup: when some entry has not been modified for a while, it will be deleted

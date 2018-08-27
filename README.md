@@ -65,6 +65,8 @@ The example sets a database that everyday will downsample the data into `"monthl
 
 The implementation stores a measure in `measures` with the data. Is it up to you to make retention policies and continues queries, as the way you want. Inside `docker/compose/iql` there's an example of a database.
 
+This implementation stores extra information (like the IP) in `measures_metadata`.
+
 ### timescaledb / postgresql
 
 The implementation stores the data into the table passed by `-db-name` option. The `-db-url` has the following format `postgres://USER:PASSWORD@ADDRESS/DATABASE[?...extraOptions]`. See [pq][4] documentation for the full specification of the URL format. The schema and the table must be created by you, but I will let you an example down:
@@ -74,7 +76,11 @@ CREATE TABLE speedy (
   time        TIMESTAMPTZ       NOT NULL, /* This one must always be there, with that name */
   mac         MACADDR           NOT NULL,
   download    BIGINT            NOT NULL,
-  upload      BIGINT            NOT NULL,
+  upload      BIGINT            NOT NULL
+);
+
+CREATE TABLE speedy_metadata (
+  mac         MACADDR           PRIMARY KEY,
   ipv4        INET              NULL,
   ipv6        INET              NULL
 );
@@ -85,6 +91,9 @@ CREATE INDEX ON speedy (mac, time DESC);
 ```
 
  > **Note**: If you don't use SSL for postgreSQL (as expected in most of the time), add `sslmode=disable` option in the URL to tell the go postgreSQL driver to not to use SSL.
+
+
+The implementation will split the metadata (with the IPs) into a separate table. It will hold the last known data of that extra information.
 
 
   [1]: https://influxdata.com
