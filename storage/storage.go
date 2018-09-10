@@ -79,7 +79,7 @@ func (s *Storage) storeInDB(db database.Database, stop chan bool) {
 			logger.Println("Stopping storeInDB gorutine...")
 			itsTimeToStop = true
 		case <- timer.C:
-			db.Store(s.getCopyAndClearSpeed())
+			go db.Store(s.getCopyAndClearSpeed())
 			s.cleanUpOldEntries()
 		}
 	}
@@ -90,17 +90,21 @@ func (s *Storage) storeChangeOfMetadata(db database.Database, entry Entry) {
 }
 
 //Cleanup: when some entry has not been modified for a while, it will be deleted
-func (s Storage) cleanUpOldEntries() {
+func (s *Storage) cleanUpOldEntries() {
 	s.mutex.Lock()
+	keysToDelete := make([]string, 0)
 	for key, value := range s.db {
 		if value.tooOld() {
-			delete(s.db, key)
+			keysToDelete = append(keysToDelete, key)
 		}
+	}
+	for _, key := range keysToDelete {
+		delete(s.db, key)
 	}
 	s.mutex.Unlock()
 }
 
-func (s Storage) getCopyAndClearSpeed() []database.Entry {
+func (s *Storage) getCopyAndClearSpeed() []database.Entry {
 	s.mutex.RLock()
 	newSlice := make([]database.Entry, 0)
 	for key, value := range s.db {
