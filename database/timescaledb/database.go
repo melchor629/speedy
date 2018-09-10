@@ -75,10 +75,14 @@ func (d *Database) StoreMetadata(entry database.Entry) {
 	sqlStr2 := fmt.Sprintf("INSERT INTO %s_metadata(mac, ipv4, ipv6) VALUES ($1, $2, $3)\n" +
 		"ON CONFLICT (mac) DO\n" +
 		"UPDATE SET ipv4 = $2, ipv6 = $3", d.table)
-	stmt, _ := d.client.Prepare(sqlStr2)
+	stmt, err := d.client.Prepare(sqlStr2)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	defer stmt.Close()
 
-	_, err := stmt.Exec(
+	_, err = stmt.Exec(
 		toString(entry.Mac()),
 		toString(entry.Ipv4()),
 		toString(entry.Ipv6()),
