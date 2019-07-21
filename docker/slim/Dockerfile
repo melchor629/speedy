@@ -1,6 +1,6 @@
 FROM golang:latest as builder
 
-RUN go get -d -v github.com/influxdata/influxdb/client/v2 && \
+RUN go get -d -v github.com/influxdata/influxdb1-client/v2 && \
     go get -d -v github.com/google/gopacket && \
     go get -d -v github.com/lib/pq && \
     go get -d -v github.com/melchor629/speedy && \

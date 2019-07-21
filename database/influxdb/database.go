@@ -1,10 +1,10 @@
 package influxdb
 
 import (
+	"github.com/influxdata/influxdb1-client/v2"
+	"github.com/melchor629/speedy/database"
 	"log"
 	"time"
-	"github.com/melchor629/speedy/database"
-	"github.com/influxdata/influxdb/client/v2"
 )
 
 //Implementation of a database using influxdb.
@@ -36,7 +36,7 @@ func New(addr string, databaseName string, username string, password string) (*D
 
 //Closes the connection to the database.
 func (d *Database) Close() {
-	d.client.Close()
+	_ = d.client.Close()
 }
 
 //Store a list of entries in a batch. Supposes no error will occur. If so, the app will stop.

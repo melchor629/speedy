@@ -1,10 +1,10 @@
 package timescaledb
 
 import (
-	"fmt"
-	"log"
 	"database/sql"
+	"fmt"
 	"github.com/melchor629/speedy/database"
+	"log"
 
 	_ "github.com/lib/pq"
 )
@@ -33,7 +33,7 @@ func New(addr string, table string) (*Database, error) {
 
 //Closes the connection to the database.
 func (d *Database) Close() {
-	d.client.Close()
+	_ = d.client.Close()
 }
 
 //Store a list of entries in a batch. Supposes no error will occur. If so, the app will stop.
